@@ -1,8 +1,87 @@
 <!DOCTYPE html>
 <html ng-app="shoppingList">
 	<head>
-		<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" type="text/css" href="stylesheet.css" />
 		<script type="text/javascript" src="angular.min.js"></script>
 		<script type="text/javascript" src="app.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 	</head>
+
+	<body ng-controller="CategoryController as catCtrl">
+		<header>
+			<h1 class="text-center" ng-show="catCtrl.selectedTab==='All'">To buy: All</h1>
+			<h1 class="text-center" ng-hide="catCtrl.selectedTab==='All'">To buy: {{catCtrl.selectedCategory}}</h1>
+		</header>
+
+		<!-- Supertype tabs w/dropdown -->
+		<div>
+			<ul class="nav nav-tabs">
+				<li ng-class="{active: catCtrl.selectedTab === 'All'}">
+					<a href ng-click="catCtrl.selectTab('All')">All</a>
+				</li>
+				<li ng-repeat="supertype in catCtrl.catSupertypes" ng-class="{ active:catCtrl.selectedTab === supertype}">
+					<a href ng-hide="catCtrl.selectedTab===supertype" data-toggle="dropdown" class="dropdown-toggle">{{supertype}}<b class="caret"></b></a>
+					<a href ng-hide="catCtrl.selectedTab!==supertype" data-toggle="dropdown" class="dropdown-toggle">{{supertype}}  -  {{catCtrl.selectedCategory}}<b class="caret"></b></a>
+					<ul class="dropdown-menu" >
+						<li><a href ng-repeat="category in catCtrl.cats[supertype]" 
+									ng-click="catCtrl.selectCategory(supertype, category)">
+									{{category}}</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+
+
+		<div class="list-group" ng-controller="ListController as listCtrl">
+			<div 	class="list-group-item" 
+					ng-repeat="product in listCtrl.products" 
+					ng-show="((product[catCtrl.selectedTab] === catCtrl.selectedCategory) || (catCtrl.selectedTab === 'All') || product[catCtrl.selectedTab] === 'All')"
+					ng-click="listCtrl.removeProduct(product)"> 
+				{{product.text}}
+
+				<span class="badge active-badge" 
+				ng-show="(((catCtrl.selectedCategory === 'All') || (catCtrl.selectedCategory === product[catCtrl.selectedTab])) && (catCtrl.selectedTab === supertype)) ||  (product[catCtrl.selectedTab] === 'All' && supertype === catCtrl.selectedTab)"
+				ng-repeat="supertype in catCtrl.catSupertypes">
+					{{product[supertype]}}
+				</span>
+				<span class="badge" 
+				ng-hide="(((catCtrl.selectedCategory === 'All') || (catCtrl.selectedCategory === product[catCtrl.selectedTab])) && (catCtrl.selectedTab === supertype)) ||  (product[catCtrl.selectedTab] === 'All' && supertype === catCtrl.selectedTab)"
+				ng-repeat="supertype in catCtrl.catSupertypes">
+					{{product[supertype]}}
+				</span>
+			</div>
+		</div>
+		<h1 ng-controller="ListController as listCtrl" ng-show="listCtrl.products.length === 0">Done!</h1>
+
+		<!--Divider-->
+		<ul class="nav nav-list">
+			<li class="divider"></li>
+		</ul>
+
+		<!-- Dependency injection goes here???-->
+		<form class="well" name="newProductForm" ng-controller="ListController as listCtrl" ng-submit="listCtrl.addProduct()">
+			<blockquote class="list-group-item" ng-show="listCtrl.newProduct.text !== null && listCtrl.newProduct.text !== undefined">
+				{{listCtrl.newProduct.text}} <span class="badge" ng-repeat="supertype in catCtrl.catSupertypes" ng-show="((listCtrl.newProduct[supertype] !== null) && (listCtrl.newProduct[supertype] !== undefined))">{{listCtrl.newProduct[supertype]}}</span>
+			</blockquote>
+			<h4>Add a new product here</h4>
+			<fieldset class="form-group">
+				<textarea ng-model="listCtrl.newProduct.text" class="form-control" placeholder="New product name..." title="name" required></textarea>
+			</fieldset>
+			<fieldset class="form-group">
+				<select class="form-control"
+						ng-repeat="supertype in catCtrl.catSupertypes" 
+						ng-model="listCtrl.newProduct[supertype]" 
+						ng-options="choices for choices in catCtrl.cats[supertype]" 
+						title="{{supertype}}"
+						required>
+					<option value>Select from {{supertype}}</option>
+				</select>
+			</fieldset>
+			<fieldset class="form-group">
+				<input type="submit" class="btn btn-primary pull-right" value="Make new product" />
+			</fieldset>
+		</form>
+	</body>
 </html>

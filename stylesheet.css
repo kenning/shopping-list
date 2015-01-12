@@ -1,0 +1,28 @@
+.list-group-item{
+	border-width: 2px;
+	margin: 20px;
+}
+.list-group-item:hover{
+	background-color:#e0e0e0;
+	cursor:pointer;
+}
+.list-group-item:active{
+	background-color:#444444;
+	color:#eeeeee;
+}
+div{
+	margin:20px;
+}
+form{
+	margin:40px;
+}
+h1{
+	margin:60px;
+}
+.form-control{
+	margin-top:10px;
+	margin-bottom:10px;
+}
+.active-badge{
+	background-color:blue;
+}
