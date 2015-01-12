@@ -12,19 +12,31 @@
 		};
 
 		this.catToAdd = "";
-		this.addCat = function() {
+		this.addCatToAdd = function() {
 			if(this.catToAdd == "") return;
 			this.supertypeToAdd.cats.push(this.catToAdd);
 			this.catToAdd = "";
 		};
 		this.removeCatToAdd = function(catToRemove) {
-			for(var i = 0; i < cats.length; i++){
-				if(cats[i] == catToRemove) {
-					cats.splice(i,1);
+			for(var i = 0; i < this.supertypeToAdd.cats.length; i++){
+				if(this.supertypeToAdd.cats[i] == catToRemove && catToRemove !== "All") {
+					this.supertypeToAdd.cats.splice(i,1);
 					break;
 				}
 			}
 		};
+		this.removeCat = function(catToRemove) {
+			for(var i = 0; i < this.cats[this.catToEdit].length; i++){
+				if(this.cats[this.catToEdit][i] === catToRemove) {
+					this.cats[this.catToEdit].splice(i, 1);
+				}
+			}
+		};
+		this.addCat = function(){
+			if(this.catToAdd == "") return;
+			this.cats[this.catToEdit].push(this.catToAdd);
+			this.catToAdd = "";
+		}
 
 		this.addSuperType = function() {
 			if(this.supertypeToAdd.cats.length < 1) return;
@@ -43,6 +55,20 @@
 			};
 			this.selectedTab = "All";
 			this.alertMessage = "Created new category " + newCatName;
+		};
+		this.addSupercat = function() {
+			this.cats[this.catToEdit] = null;
+			for(var i = 0; i < this.catSupertypes.length; i++){
+				if(this.cats[this.catToEdit] === this.catSupertypes[i]) {
+					this.catSupertypes.splice(i, 1);
+				}
+			}
+		}
+
+		this.catToEdit = "";
+		this.editCategory = function(editCategory) {
+			this.selectedTab = "Edit Category";
+			this.catToEdit = editCategory;
 		};
 
 		this.cats = {

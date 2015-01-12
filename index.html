@@ -11,8 +11,10 @@
 
 	<body ng-controller="CategoryController as catCtrl">
 		<header>
-			<h1 class="text-center" ng-show="catCtrl.selectedTab==='All'">To buy: All</h1>
-			<h1 class="text-center" ng-hide="catCtrl.selectedTab==='All'">To buy: {{catCtrl.selectedCategory}}</h1>
+			<h1 class="text-center" ng-show="(catCtrl.selectedTab==='All')">To buy: {{catCtrl.selectedTab}}</h1>
+			<h1 class="text-center" ng-show="(catCtrl.selectedTab==='New Category') ">{{catCtrl.selectedTab}}</h1>
+			<h1 class="text-center" ng-show="(catCtrl.selectedTab==='Edit Category')">{{catCtrl.selectedTab}}: {{catCtrl.catToEdit}}
+			<h1 class="text-center" ng-hide="(catCtrl.selectedTab==='All') || (catCtrl.selectedTab==='Edit Category') || (catCtrl.selectedTab==='New Category') ">To buy: {{catCtrl.selectedCategory}}</h1>
 			<h4 class="text-center" ng-hide="catCtrl.alertMessage === ''">{{catCtrl.alertMessage}}</h4>
 		</header>
 
@@ -30,7 +32,7 @@
 									ng-click="catCtrl.selectCategory(supertype, category)"
 									ng-hide="category == 'All'">
 									{{category}}</a></li>
-						<li class="divider"><a href></a></ul>
+						<li class="divider"><a href></a></li>
 						<li><a href ng-click="catCtrl.editCategory(supertype)">Edit {{supertype}}...</a></li>
 					</ul>
 				</li>
@@ -41,7 +43,7 @@
 		</div>
 
 		<!--Shopping list-->
-		<div class="list-group" ng-controller="ListController as listCtrl" ng-hide="catCtrl.selectedTab === 'New Category'">
+		<div class="list-group" ng-controller="ListController as listCtrl" ng-hide="catCtrl.selectedTab === 'New Category' || catCtrl.selectedTab === 'Edit Category'">
 			<div 	class="list-group-item" 
 					ng-repeat="product in listCtrl.products" 
 					ng-show="((product[catCtrl.selectedTab] === catCtrl.selectedCategory) || (catCtrl.selectedTab === 'All') || product[catCtrl.selectedTab] === 'All')"
@@ -68,7 +70,7 @@
 		</ul>
 
 		<!-- New product form -->
-		<form class="well" name="newProductForm" ng-controller="ListController as listCtrl" ng-submit="listCtrl.addProduct()" ng-hide="catCtrl.selectedTab === 'New Category'">
+		<form class="well" name="newProductForm" ng-controller="ListController as listCtrl" ng-submit="listCtrl.addProduct()" ng-hide="(catCtrl.selectedTab === 'New Category') || (catCtrl.selectedTab === 'Edit Category')">
 			<blockquote class="list-group-item" ng-show="listCtrl.newProduct.text !== null && listCtrl.newProduct.text !== undefined">
 				{{listCtrl.newProduct.text}} <span class="badge" ng-repeat="supertype in catCtrl.catSupertypes" ng-show="((listCtrl.newProduct[supertype] !== null) && (listCtrl.newProduct[supertype] !== undefined))">{{listCtrl.newProduct[supertype]}}</span>
 			</blockquote>
@@ -91,15 +93,17 @@
 			</fieldset>
 		</form>
 
+		<!--New category form-->
 		<div class="container-fluid">
-			<div  class="row newcat"  ng-controller="ListController as listCtrl" ng-show="catCtrl.selectedTab==='New Category'">
+			<div  class="row newcat" ng-show="catCtrl.selectedTab==='New Category'">
 				<div class="col-lg-6">
 					<form name="newCategoryForm" ng-submit="catCtrl.addSuperType()">
 						<h2>Make a new category!</h2>
-						<h4>Make sure to include subcategories.</h4>
-						<blockquote class="well" ng-show="catCtrl.supertypeToAdd.cats !== [] && catCtrl.supertypeToAdd.name !== ''">
+						<h4>Make sure to include subcategories. Click on one to remove it.</h4>
+						<blockquote class="well" ng-show="catCtrl.supertypeToAdd.cats !== ['All'] && catCtrl.supertypeToAdd.name !== ''">
 							<h4>{{catCtrl.supertypeToAdd.name}}</h4>
-							<button class="btn btn-default" ng-repeat="cat in catCtrl.supertypeToAdd.cats" ng-click="catCtrl.removeCatToAdd(cat)">{{cat}}<br></button>
+							<button class="btn btn-default" type="button">All</button>
+							<button class="btn btn-default" ng-repeat="cat in catCtrl.supertypeToAdd.cats" ng-click="catCtrl.removeCatToAdd(cat)" ng-hide="cat=='All'">{{cat}}<br></button>
 							<button class="btn btn-default" ng-click="catCtrl.catToAdd = ''">{{catCtrl.catToAdd}}</button>
 						</blockquote>
 						<fieldset class="form-group">
@@ -111,9 +115,34 @@
 					</form>
 				</div>
 				<div class="col-lg-6">
-					<form name="newSubcatForm"ng-submit="catCtrl.addCat()" class="col-md-6">
+					<form name="newSubcatForm"ng-submit="catCtrl.addCatToAdd()" class="col-md-6">
 						<fieldset class="form-group">
 							<textarea ng-model="catCtrl.catToAdd" class="form-control" placeholder="Make a subcategory. Example: '50% off'" title="subcategory"></textarea>
+						</fieldset>
+						<fieldset class="form-group">
+							<input type="submit" class="btn btn-primary pull-right" value="Add" />
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!--Edit category form-->
+		<div class="container-fluid">
+			<div class="row newcat" ng-show="catCtrl.selectedTab==='Edit Category'">
+				<div class="col-lg-6">
+					<h2>Edit category: {{catCtrl.catToEdit}}</h2>
+					<h4>Click on a subcategory to remove it.</h4>
+					<blockquote class="well">
+						<h4>{{catCtrl.catToEdit}}</h4>
+						<button class="btn btn-default" type="button">All</button>
+						<button class="btn btn-default" ng-repeat="cat in catCtrl.cats[catCtrl.catToEdit]" ng-click="catCtrl.removeCat(cat)" ng-hide="cat=='All'">{{cat}}</button>
+						<button class="btn btn-default" type="button">{{catCtrl.catToAdd}}</button>
+					</blockquote>
+				</div>
+				<div class="col-lg-6">
+					<form name="newSubcatForm"ng-submit="catCtrl.addCat()" class="col-md-6">
+						<fieldset class="form-group">
+							<textarea ng-model="catCtrl.catToAdd" class="form-control" placeholder="Make a subcategory"></textarea>
 						</fieldset>
 						<fieldset class="form-group">
 							<input type="submit" class="btn btn-primary pull-right" value="Add" />
