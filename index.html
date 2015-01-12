@@ -13,11 +13,12 @@
 		<header>
 			<h1 class="text-center" ng-show="catCtrl.selectedTab==='All'">To buy: All</h1>
 			<h1 class="text-center" ng-hide="catCtrl.selectedTab==='All'">To buy: {{catCtrl.selectedCategory}}</h1>
+			<h4 class="text-center" ng-hide="catCtrl.alertMessage === ''">{{catCtrl.alertMessage}}</h4>
 		</header>
 
 		<!-- Supertype tabs w/dropdown -->
-		<div>
-			<ul class="nav nav-tabs">
+		<div class="margin">
+			<ul class="nav nav-pills">
 				<li ng-class="{active: catCtrl.selectedTab === 'All'}">
 					<a href ng-click="catCtrl.selectTab('All')">All</a>
 				</li>
@@ -26,15 +27,21 @@
 					<a href ng-hide="catCtrl.selectedTab!==supertype" data-toggle="dropdown" class="dropdown-toggle">{{supertype}}  -  {{catCtrl.selectedCategory}}<b class="caret"></b></a>
 					<ul class="dropdown-menu" >
 						<li><a href ng-repeat="category in catCtrl.cats[supertype]" 
-									ng-click="catCtrl.selectCategory(supertype, category)">
+									ng-click="catCtrl.selectCategory(supertype, category)"
+									ng-hide="category == 'All'">
 									{{category}}</a></li>
+						<li class="divider"><a href></a></ul>
+						<li><a href ng-click="catCtrl.editCategory(supertype)">Edit {{supertype}}...</a></li>
 					</ul>
+				</li>
+				<li ng-class="{active: catCtrl.selectedTab === 'New Category'}">
+					<a href ng-click="catCtrl.selectTab('New Category')">+</a> 
 				</li>
 			</ul>
 		</div>
 
-
-		<div class="list-group" ng-controller="ListController as listCtrl">
+		<!--Shopping list-->
+		<div class="list-group" ng-controller="ListController as listCtrl" ng-hide="catCtrl.selectedTab === 'New Category'">
 			<div 	class="list-group-item" 
 					ng-repeat="product in listCtrl.products" 
 					ng-show="((product[catCtrl.selectedTab] === catCtrl.selectedCategory) || (catCtrl.selectedTab === 'All') || product[catCtrl.selectedTab] === 'All')"
@@ -42,26 +49,26 @@
 				{{product.text}}
 
 				<span class="badge active-badge" 
-				ng-show="(((catCtrl.selectedCategory === 'All') || (catCtrl.selectedCategory === product[catCtrl.selectedTab])) && (catCtrl.selectedTab === supertype)) ||  (product[catCtrl.selectedTab] === 'All' && supertype === catCtrl.selectedTab)"
+				ng-show="((((catCtrl.selectedCategory === 'All') || (catCtrl.selectedCategory === product[catCtrl.selectedTab])) && (catCtrl.selectedTab === supertype)) ||  (product[catCtrl.selectedTab] === 'All' && supertype === catCtrl.selectedTab)) && product[supertype] !== null && product[supertype] !== ''"
 				ng-repeat="supertype in catCtrl.catSupertypes">
 					{{product[supertype]}}
 				</span>
 				<span class="badge" 
-				ng-hide="(((catCtrl.selectedCategory === 'All') || (catCtrl.selectedCategory === product[catCtrl.selectedTab])) && (catCtrl.selectedTab === supertype)) ||  (product[catCtrl.selectedTab] === 'All' && supertype === catCtrl.selectedTab)"
+				ng-hide="((((catCtrl.selectedCategory === 'All') || (catCtrl.selectedCategory === product[catCtrl.selectedTab])) && (catCtrl.selectedTab === supertype)) ||  (product[catCtrl.selectedTab] === 'All' && supertype === catCtrl.selectedTab)) || product[supertype] === null || product[supertype] === '' || product[supertype] === undefined"
 				ng-repeat="supertype in catCtrl.catSupertypes">
 					{{product[supertype]}}
 				</span>
 			</div>
 		</div>
-		<h1 ng-controller="ListController as listCtrl" ng-show="listCtrl.products.length === 0">Done!</h1>
+		<h1 ng-controller="ListController as listCtrl" ng-show="listCtrl.products.length === 0 && catCtrl.selectedTab !== 'New Category'">Done!</h1>
 
 		<!--Divider-->
 		<ul class="nav nav-list">
 			<li class="divider"></li>
 		</ul>
 
-		<!-- Dependency injection goes here???-->
-		<form class="well" name="newProductForm" ng-controller="ListController as listCtrl" ng-submit="listCtrl.addProduct()">
+		<!-- New product form -->
+		<form class="well" name="newProductForm" ng-controller="ListController as listCtrl" ng-submit="listCtrl.addProduct()" ng-hide="catCtrl.selectedTab === 'New Category'">
 			<blockquote class="list-group-item" ng-show="listCtrl.newProduct.text !== null && listCtrl.newProduct.text !== undefined">
 				{{listCtrl.newProduct.text}} <span class="badge" ng-repeat="supertype in catCtrl.catSupertypes" ng-show="((listCtrl.newProduct[supertype] !== null) && (listCtrl.newProduct[supertype] !== undefined))">{{listCtrl.newProduct[supertype]}}</span>
 			</blockquote>
@@ -83,5 +90,37 @@
 				<input type="submit" class="btn btn-primary pull-right" value="Make new product" />
 			</fieldset>
 		</form>
+
+		<div class="container-fluid">
+			<div  class="row newcat"  ng-controller="ListController as listCtrl" ng-show="catCtrl.selectedTab==='New Category'">
+				<div class="col-lg-6">
+					<form name="newCategoryForm" ng-submit="catCtrl.addSuperType()">
+						<h2>Make a new category!</h2>
+						<h4>Make sure to include subcategories.</h4>
+						<blockquote class="well" ng-show="catCtrl.supertypeToAdd.cats !== [] && catCtrl.supertypeToAdd.name !== ''">
+							<h4>{{catCtrl.supertypeToAdd.name}}</h4>
+							<button class="btn btn-default" ng-repeat="cat in catCtrl.supertypeToAdd.cats" ng-click="catCtrl.removeCatToAdd(cat)">{{cat}}<br></button>
+							<button class="btn btn-default" ng-click="catCtrl.catToAdd = ''">{{catCtrl.catToAdd}}</button>
+						</blockquote>
+						<fieldset class="form-group">
+							<textarea ng-model="catCtrl.supertypeToAdd.name" class="form-control" placeholder="Make a new category. Example: 'On sale'" title="name" required></textarea>
+						</fieldset>
+						<fieldset class="form-group">
+							<input type="submit" class="btn btn-primary pull-right" value="Create new category!" />
+						</fieldset>
+					</form>
+				</div>
+				<div class="col-lg-6">
+					<form name="newSubcatForm"ng-submit="catCtrl.addCat()" class="col-md-6">
+						<fieldset class="form-group">
+							<textarea ng-model="catCtrl.catToAdd" class="form-control" placeholder="Make a subcategory. Example: '50% off'" title="subcategory"></textarea>
+						</fieldset>
+						<fieldset class="form-group">
+							<input type="submit" class="btn btn-primary pull-right" value="Add" />
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

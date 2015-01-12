@@ -2,6 +2,15 @@
 	border-width: 2px;
 	margin: 20px;
 }
+.newcat{
+	background-color:#99BCDB;
+}
+.nav-pills{
+	margin:10px;
+}
+.newsupercat:hover{
+	cursor:normal;
+}
 .list-group-item:hover{
 	background-color:#e0e0e0;
 	cursor:pointer;
@@ -10,7 +19,7 @@
 	background-color:#444444;
 	color:#eeeeee;
 }
-div{
+.margin{
 	margin:20px;
 }
 form{
@@ -24,5 +33,5 @@ h1{
 	margin-bottom:10px;
 }
 .active-badge{
-	background-color:blue;
+	background-color:#337ab7;
 }
