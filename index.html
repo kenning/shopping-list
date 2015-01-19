@@ -106,7 +106,9 @@
 							<button class="btn btn-default" ng-repeat="cat in catCtrl.supertypeToAdd.cats" ng-click="catCtrl.removeCatToAdd(cat)" ng-hide="cat=='All'">{{cat}}<br></button>
 							<button class="btn btn-default" ng-click="catCtrl.catToAdd = ''">{{catCtrl.catToAdd}}</button>
 						</blockquote>
+						<br>
 						<fieldset class="form-group">
+							<h2>Category name</h2>
 							<textarea ng-model="catCtrl.supertypeToAdd.name" class="form-control" placeholder="Make a new category. Example: 'On sale'" title="name" required></textarea>
 						</fieldset>
 						<fieldset class="form-group">
@@ -116,7 +118,8 @@
 				</div>
 				<div class="col-lg-6">
 					<form name="newSubcatForm"ng-submit="catCtrl.addCatToAdd()" class="col-md-6">
-						<fieldset class="form-group">
+						<fieldset class="form-group middle-align">
+							<h2>Add a subcategory</h2>
 							<textarea ng-model="catCtrl.catToAdd" class="form-control" placeholder="Make a subcategory. Example: '50% off'" title="subcategory"></textarea>
 						</fieldset>
 						<fieldset class="form-group">
@@ -141,7 +144,8 @@
 				</div>
 				<div class="col-lg-6">
 					<form name="newSubcatForm"ng-submit="catCtrl.addCat()" class="col-md-6">
-						<fieldset class="form-group">
+						<fieldset class="form-group middle-align">
+							<h2>Add a subcategory</h2>
 							<textarea ng-model="catCtrl.catToAdd" class="form-control" placeholder="Make a subcategory"></textarea>
 						</fieldset>
 						<fieldset class="form-group">

@@ -35,3 +35,7 @@ h1{
 .active-badge{
 	background-color:#337ab7;
 }
+.middle-align{
+  	display: flex;
+  	align-items: center;
+}
